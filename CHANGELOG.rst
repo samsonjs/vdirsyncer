@@ -40,6 +40,10 @@ Version 0.19.0
   use that as a reference.
 
 .. _etesync-dav: https://github.com/etesync/etesync-dav
+- Add ``implicit`` option to storage section.  It creates/deletes implicitly
+  collections in the destinations, when new collections are created/deleted
+  in the source. The deletion is implemented only for the "filesystem" storage.
+  See :ref:`storage_config`.
 
 Version 0.18.0
 ==============
