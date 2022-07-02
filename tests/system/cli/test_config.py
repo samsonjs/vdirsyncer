@@ -222,10 +222,14 @@ def test_validate_collections_param():
     x([["c", None, None]])
 
 
-def test_invalid_implicit_param(read_config):
+def test_invalid_implicit_type(read_config):
+    expected_message = "`implicit` parameter must be a list, string, or absent"
     with pytest.raises(exceptions.UserError) as excinfo:
         read_config(
             """
+            [general]
+            status_path = "/tmp/status/"
+
             [pair my_pair]
             a = "my_a"
             b = "my_b"
@@ -244,4 +248,33 @@ def test_invalid_implicit_param(read_config):
             """
         )
 
-    assert "tktk" in str(excinfo.value)
+    assert expected_message in str(excinfo.value)
+
+
+def test_invalid_implicit_member(read_config):
+    expected_message = "`implicit` parameter, position 0: must be one of"
+    with pytest.raises(exceptions.UserError) as excinfo:
+        read_config(
+            """
+            [general]
+            status_path = "/tmp/status/"
+
+            [pair my_pair]
+            a = "my_a"
+            b = "my_b"
+            collections = null
+            implicit = ["invalid"]
+
+            [storage my_a]
+            type = "filesystem"
+            path = "{base}/path_a/"
+            fileext = ".txt"
+
+            [storage my_b]
+            type = "filesystem"
+            path = "{base}/path_b/"
+            fileext = ".txt"
+            """
+        )
+
+    assert expected_message in str(excinfo.value)

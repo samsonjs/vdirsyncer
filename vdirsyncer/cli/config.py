@@ -99,7 +99,7 @@ def _validate_implicit_param(implicit):
         implicit = [implicit]
 
     if not isinstance(implicit, list):
-        raise ValueError("`implicit` parameter must be a list, string or absent.")
+        raise ValueError("`implicit` parameter must be a list, string, or absent.")
 
     valid_actions = ["create", "delete"]
     for i, action in enumerate(implicit):
