@@ -127,6 +127,25 @@ Pair Section
 
   The ``conflict_resolution`` parameter applies for these properties too.
 
+.. _implicit_collections:
+
+- ``implicit``: Opt into implicitly creation and/or deleting collections. Example::
+
+      implicit = "create"
+
+  or
+
+      implicit = ["create", "delete"]
+
+  When a new collection is created on the source, and the value includes "create",
+  new collections are created in the destination without asking questions. When
+  the value includes "delete" and collections are removed from the source, they're
+  automatically removed from the destination as well.
+
+  The value can be a string or an array of strings.
+
+  The ``conflict_resolution`` parameter applies to this setting too.
+
 .. _storage_config:
 
 Storage Section
@@ -365,8 +384,6 @@ Local
       #encoding = "utf-8"
       #post_hook = null
       #fileignoreext = ".tmp"
-      #implicit = "create"
-      #implicit = ["create", "delete"]
 
     Can be used with `khal <http://lostpackets.de/khal/>`_. See :doc:`vdir` for
     a more formal description of the format.
@@ -389,12 +406,7 @@ Local
         new/updated file.
     :param fileeignoreext: The file extention to ignore. It is only useful
         if fileext is set to the empty string. The default is ``.tmp``.
-    :param implicit: When a new collection is created on the source, and the
-        value is "create", create the collection in the destination without
-        asking questions.  When the value is "delete" and a collection
-        is removed on the source, remove it in the destination.  The value
-        can be a string or an array of strings.  The deletion is implemented
-        only for the "filesystem" storage.
+
 
 .. storage:: singlefile
 

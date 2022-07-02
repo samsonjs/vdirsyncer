@@ -121,31 +121,33 @@ async def collections_for_pair(
         },
     )
 
-    if "from b" in (pair.collections or []):
-        only_in_a = set(a_discovered.get_self().keys()) - set(
-            b_discovered.get_self().keys()
-        )
-        if only_in_a and "delete" in pair.config_a["implicit"]:
-            for a in only_in_a:
-                try:
-                    handle_collection_was_removed(pair.config_a, a)
-                    save_status(status_path, pair.name, a, data_type="metadata")
-                    save_status(status_path, pair.name, a, data_type="items")
-                except NotImplementedError as e:
-                    cli_logger.error(e)
+    # FIXME: this doesn't seem like a good place for this code
+    if "delete" in pair.implicit:
+        if "from b" in (pair.collections or []) and pair.conflict_resolution == "b wins":
+            only_in_a = set(a_discovered.get_self().keys()) - set(
+                b_discovered.get_self().keys()
+            )
+            if only_in_a:
+                for a in only_in_a:
+                    try:
+                        handle_collection_was_removed(pair.config_a, a)
+                        save_status(status_path, pair.name, a, data_type="metadata")
+                        save_status(status_path, pair.name, a, data_type="items")
+                    except NotImplementedError as e:
+                        cli_logger.error(e)
 
-    if "from a" in (pair.collections or []):
-        only_in_b = set(b_discovered.get_self().keys()) - set(
-            a_discovered.get_self().keys()
-        )
-        if only_in_b and "delete" in pair.config_b["implicit"]:
-            for b in only_in_b:
-                try:
-                    handle_collection_was_removed(pair.config_b, b)
-                    save_status(status_path, pair.name, b, data_type="metadata")
-                    save_status(status_path, pair.name, b, data_type="items")
-                except NotImplementedError as e:
-                    cli_logger.error(e)
+        if "from a" in (pair.collections or []) and pair.conflict_resolution == "a wins":
+            only_in_b = set(b_discovered.get_self().keys()) - set(
+                a_discovered.get_self().keys()
+            )
+            if only_in_b:
+                for b in only_in_b:
+                    try:
+                        handle_collection_was_removed(pair.config_b, b)
+                        save_status(status_path, pair.name, b, data_type="metadata")
+                        save_status(status_path, pair.name, b, data_type="items")
+                    except NotImplementedError as e:
+                        cli_logger.error(e)
 
     return rv
 

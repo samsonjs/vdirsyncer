@@ -336,16 +336,15 @@ def assert_permissions(path, wanted):
 
 
 def handle_collection_was_removed(config, collection):
-    if "delete" in config["implicit"]:
-        storage_type = config["type"]
-        cls, config = storage_class_from_config(config)
-        config["collection"] = collection
-        try:
-            args = cls.delete_collection(**config)
-            args["type"] = storage_type
-            return args
-        except NotImplementedError as e:
-            cli_logger.error(e)
+    storage_type = config["type"]
+    cls, config = storage_class_from_config(config)
+    config["collection"] = collection
+    try:
+        args = cls.delete_collection(**config)
+        args["type"] = storage_type
+        return args
+    except NotImplementedError as e:
+        cli_logger.error(e)
 
 
 async def handle_collection_not_found(config, collection, e=None):
@@ -357,9 +356,7 @@ async def handle_collection_not_found(config, collection, e=None):
         )
     )
 
-    if "create" in config["implicit"] or click.confirm(
-        "Should vdirsyncer attempt to create it?"
-    ):
+    if click.confirm("Should vdirsyncer attempt to create it?"):
         storage_type = config["type"]
         cls, config = storage_class_from_config(config)
         config["collection"] = collection

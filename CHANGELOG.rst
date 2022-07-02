@@ -43,7 +43,9 @@ Version 0.19.0
 - Add ``implicit`` option to storage section.  It creates/deletes implicitly
   collections in the destinations, when new collections are created/deleted
   in the source. The deletion is implemented only for the "filesystem" storage.
-  See :ref:`storage_config`.
+  This respects your `conflict_resolution` configuration and shows an error when
+  not configured or set to run a command.
+  See :ref:`_implicit_collections`.
 
 Version 0.18.0
 ==============

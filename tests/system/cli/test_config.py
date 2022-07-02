@@ -59,14 +59,9 @@ def test_read_config(read_config):
             "fileext": ".vcf",
             "yesno": False,
             "number": 42,
-            "instance_name": "bob_a",
-            "implicit": [],
+            "instance_name": "bob_a"
         },
-        "bob_b": {
-            "type": "carddav",
-            "instance_name": "bob_b",
-            "implicit": [],
-        },
+        "bob_b": {"type": "carddav", "instance_name": "bob_b"},
     }
 
 
@@ -225,3 +220,28 @@ def test_validate_collections_param():
     x([["c", None, "b"]])
     x([["c", "a", None]])
     x([["c", None, None]])
+
+
+def test_invalid_implicit_param(read_config):
+    with pytest.raises(exceptions.UserError) as excinfo:
+        read_config(
+            """
+            [pair my_pair]
+            a = "my_a"
+            b = "my_b"
+            collections = null
+            implicit = 42
+
+            [storage my_a]
+            type = "filesystem"
+            path = "{base}/path_a/"
+            fileext = ".txt"
+
+            [storage my_b]
+            type = "filesystem"
+            path = "{base}/path_b/"
+            fileext = ".txt"
+            """
+        )
+
+    assert "tktk" in str(excinfo.value)

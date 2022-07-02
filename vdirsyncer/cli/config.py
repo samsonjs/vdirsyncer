@@ -91,6 +91,24 @@ def _validate_collections_param(collections):
             raise ValueError(f"`collections` parameter, position {i}: {str(e)}")
 
 
+def _validate_implicit_param(implicit):
+    if implicit is None:
+        return
+
+    if isinstance(implicit, str):
+        implicit = [implicit]
+
+    if not isinstance(implicit, list):
+        raise ValueError("`implicit` parameter must be a list, string or absent.")
+
+    valid_actions = ["create", "delete"]
+    for i, action in enumerate(implicit):
+        if not action in valid_actions:
+            raise ValueError(
+                f"`implicit` parameter, position {i}: must be one of {valid_actions}"
+            )
+
+
 class _ConfigReader:
     def __init__(self, f):
         self._file = f
@@ -113,14 +131,6 @@ class _ConfigReader:
                 raise ValueError("More than one general section.")
             self._general = options
         elif section_type == "storage":
-            if "implicit" not in options:
-                options["implicit"] = []
-            elif isinstance(options["implicit"], str):
-                options["implicit"] = [options["implicit"]]
-            elif not isinstance(options["implicit"], list):
-                raise ValueError(
-                    "`implicit` parameter must be a list, string or absent."
-                )
             self._storages[name] = options
         elif section_type == "pair":
             self._pairs[name] = options
@@ -224,6 +234,7 @@ class PairConfig:
         self.name = name
         self.name_a = options.pop("a")
         self.name_b = options.pop("b")
+        self.implicit = options.pop("implicit", [])
 
         self._partial_sync = options.pop("partial_sync", None)
         self.metadata = options.pop("metadata", None) or ()
@@ -242,6 +253,7 @@ class PairConfig:
             )
         else:
             _validate_collections_param(self.collections)
+            _validate_implicit_param(self.implicit)
 
         if options:
             raise ValueError("Unknown options: {}".format(", ".join(options)))
