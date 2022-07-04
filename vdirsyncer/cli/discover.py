@@ -14,6 +14,7 @@ from .utils import handle_collection_was_removed
 from .utils import handle_storage_init_error
 from .utils import load_status
 from .utils import save_status
+from .utils import delete_status
 from .utils import storage_class_from_config
 from .utils import storage_instance_from_config
 
@@ -94,6 +95,14 @@ async def collections_for_pair(
             connector=connector,
         )
 
+    async def _handle_collection_not_found(config, collection, e=None, implicit_create=False):
+        return await handle_collection_not_found(
+            config,
+            collection,
+            e=e,
+            implicit_create="create" in pair.implicit,
+        )
+
     # We have to use a list here because the special None/null value would get
     # mangled to string (because JSON objects always have string keys).
     rv = await aiostream.stream.list(
@@ -103,7 +112,7 @@ async def collections_for_pair(
             config_b=pair.config_b,
             get_a_discovered=a_discovered.get_self,
             get_b_discovered=b_discovered.get_self,
-            _handle_collection_not_found=handle_collection_not_found,
+            _handle_collection_not_found=_handle_collection_not_found,
         )
     )
 
@@ -121,7 +130,6 @@ async def collections_for_pair(
         },
     )
 
-    # FIXME: this doesn't seem like a good place for this code
     if "delete" in pair.implicit:
         if "from b" in (pair.collections or []) and pair.conflict_resolution == "b wins":
             only_in_a = set(a_discovered.get_self().keys()) - set(
@@ -131,8 +139,8 @@ async def collections_for_pair(
                 for a in only_in_a:
                     try:
                         handle_collection_was_removed(pair.config_a, a)
-                        save_status(status_path, pair.name, a, data_type="metadata")
-                        save_status(status_path, pair.name, a, data_type="items")
+                        delete_status(status_path, pair.name, a, data_type="metadata")
+                        delete_status(status_path, pair.name, a, data_type="items")
                     except NotImplementedError as e:
                         cli_logger.error(e)
 
@@ -144,8 +152,8 @@ async def collections_for_pair(
                 for b in only_in_b:
                     try:
                         handle_collection_was_removed(pair.config_b, b)
-                        save_status(status_path, pair.name, b, data_type="metadata")
-                        save_status(status_path, pair.name, b, data_type="items")
+                        delete_status(status_path, pair.name, b, data_type="metadata")
+                        delete_status(status_path, pair.name, b, data_type="items")
                     except NotImplementedError as e:
                         cli_logger.error(e)
 

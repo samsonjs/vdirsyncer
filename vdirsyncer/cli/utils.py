@@ -227,20 +227,26 @@ def manage_sync_status(base_path, pair_name, collection_name):
 
 def save_status(base_path, pair, collection=None, data_type=None, data=None):
     assert data_type is not None
+    assert data is not None
     status_name = get_status_name(pair, collection)
     path = expand_path(os.path.join(base_path, status_name)) + "." + data_type
     prepare_status_path(path)
-    if data is None:
-        try:
-            os.remove(path)
-        except OSError:  # the file has not existed
-            pass
-        return
 
     with atomic_write(path, mode="w", overwrite=True) as f:
         json.dump(data, f)
 
     os.chmod(path, STATUS_PERMISSIONS)
+
+
+def delete_status(base_path, pair, collection=None, data_type=None):
+    assert data_type is not None
+    status_name = get_status_name(pair, collection)
+    path = expand_path(os.path.join(base_path, status_name)) + "." + data_type
+    try:
+        os.remove(path)
+    except OSError:  # the file has not existed
+        pass
+    return
 
 
 def storage_class_from_config(config):
@@ -277,7 +283,7 @@ async def storage_instance_from_config(
     except exceptions.CollectionNotFound as e:
         if create:
             config = await handle_collection_not_found(
-                config, config.get("collection", None), e=str(e)
+                config, config.get("collection", None), e=str(e), implicit_create=True
             )
             return await storage_instance_from_config(
                 config,
@@ -347,7 +353,7 @@ def handle_collection_was_removed(config, collection):
         cli_logger.error(e)
 
 
-async def handle_collection_not_found(config, collection, e=None):
+async def handle_collection_not_found(config, collection, e=None, implicit_create=False):
     storage_name = config.get("instance_name", None)
 
     cli_logger.warning(
@@ -356,14 +362,9 @@ async def handle_collection_not_found(config, collection, e=None):
         )
     )
 
-    if click.confirm("Should vdirsyncer attempt to create it?"):
-        storage_type = config["type"]
-        cls, config = storage_class_from_config(config)
-        config["collection"] = collection
+    if implicit_create or click.confirm("Should vdirsyncer attempt to create it?"):
         try:
-            args = await cls.create_collection(**config)
-            args["type"] = storage_type
-            return args
+            return await create_collection(config, collection)
         except NotImplementedError as e:
             cli_logger.error(e)
 
@@ -372,3 +373,12 @@ async def handle_collection_not_found(config, collection, e=None):
         'storage "{storage}". Please create the collection '
         "yourself.".format(collection=collection, storage=storage_name)
     )
+
+
+async def create_collection(config, collection):
+    storage_type = config["type"]
+    cls, config = storage_class_from_config(config)
+    config["collection"] = collection
+    args = await cls.create_collection(**config)
+    args["type"] = storage_type
+    return args
