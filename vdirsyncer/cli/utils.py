@@ -353,7 +353,9 @@ def handle_collection_was_removed(config, collection):
         cli_logger.error(e)
 
 
-async def handle_collection_not_found(config, collection, e=None, implicit_create=False):
+async def handle_collection_not_found(
+    config, collection, e=None, implicit_create=False
+):
     storage_name = config.get("instance_name", None)
 
     cli_logger.warning(

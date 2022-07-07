@@ -95,7 +95,9 @@ async def collections_for_pair(
             connector=connector,
         )
 
-    async def _handle_collection_not_found(config, collection, e=None, implicit_create=False):
+    async def _handle_collection_not_found(
+        config, collection, e=None, implicit_create=False
+    ):
         return await handle_collection_not_found(
             config,
             collection,
@@ -131,7 +133,10 @@ async def collections_for_pair(
     )
 
     if "delete" in pair.implicit:
-        if "from b" in (pair.collections or []) and pair.conflict_resolution == "b wins":
+        if (
+            "from b" in (pair.collections or [])
+            and pair.conflict_resolution == "b wins"
+        ):
             only_in_a = set(a_discovered.get_self().keys()) - set(
                 b_discovered.get_self().keys()
             )
@@ -144,7 +149,10 @@ async def collections_for_pair(
                     except NotImplementedError as e:
                         cli_logger.error(e)
 
-        if "from a" in (pair.collections or []) and pair.conflict_resolution == "a wins":
+        if (
+            "from a" in (pair.collections or [])
+            and pair.conflict_resolution == "a wins"
+        ):
             only_in_b = set(b_discovered.get_self().keys()) - set(
                 a_discovered.get_self().keys()
             )
