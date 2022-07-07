@@ -9,12 +9,12 @@ import aiostream
 
 from .. import exceptions
 from . import cli_logger
+from .utils import delete_status
 from .utils import handle_collection_not_found
 from .utils import handle_collection_was_removed
 from .utils import handle_storage_init_error
 from .utils import load_status
 from .utils import save_status
-from .utils import delete_status
 from .utils import storage_class_from_config
 from .utils import storage_instance_from_config
 

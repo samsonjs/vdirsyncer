@@ -127,7 +127,7 @@ Pair Section
 
   The ``conflict_resolution`` parameter applies for these properties too.
 
-.. _implicit_collections:
+.. _implicit_def:
 
 - ``implicit``: Opt into implicitly creation and/or deleting collections. Example::
 

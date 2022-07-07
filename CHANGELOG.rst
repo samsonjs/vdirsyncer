@@ -38,14 +38,14 @@ Version 0.19.0
 - The ``plist`` for macOS has been dropped. It was broken and homebrew
   generates their own based on package metadata. macOS users are encouraged to
   use that as a reference.
+- Add ``implicit`` option to the :ref:`pair section <pair_config>`. It implicitly
+  creates and deletes collections in the destinations, when new collections are
+  created/deleted in the source. The deletion is implemented only for the
+  "filesystem" storage. This respects your `conflict_resolution` configuration
+  and shows an error when not configured or set to run a command.
+  See :ref:`implicit docs <implicit_def>` for details.
 
 .. _etesync-dav: https://github.com/etesync/etesync-dav
-- Add ``implicit`` option to storage section.  It creates/deletes implicitly
-  collections in the destinations, when new collections are created/deleted
-  in the source. The deletion is implemented only for the "filesystem" storage.
-  This respects your `conflict_resolution` configuration and shows an error when
-  not configured or set to run a command.
-  See :ref:`_implicit_collections`.
 
 Version 0.18.0
 ==============

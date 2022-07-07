@@ -103,7 +103,7 @@ def _validate_implicit_param(implicit):
 
     valid_actions = ["create", "delete"]
     for i, action in enumerate(implicit):
-        if not action in valid_actions:
+        if action not in valid_actions:
             raise ValueError(
                 f"`implicit` parameter, position {i}: must be one of {valid_actions}"
             )

@@ -59,7 +59,7 @@ def test_read_config(read_config):
             "fileext": ".vcf",
             "yesno": False,
             "number": 42,
-            "instance_name": "bob_a"
+            "instance_name": "bob_a",
         },
         "bob_b": {"type": "carddav", "instance_name": "bob_b"},
     }

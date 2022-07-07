@@ -37,9 +37,11 @@ class ServerMixin:
                 args = self.storage_class.create_collection(
                     collection + str(uuid.uuid4()), **davical_args
                 )
-                s = self.storage_class(**args)
-                if not list(s.list()):
-                    request.addfinalizer(lambda: s.session.request("DELETE", ""))
+                storage = self.storage_class(**args)
+                if not list(storage.list()):
+                    request.addfinalizer(
+                        lambda s=storage: s.session.request("DELETE", "")
+                    )
                     return args
 
             raise RuntimeError("Failed to find free collection.")
